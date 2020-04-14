@@ -21,16 +21,16 @@
 			</el-table-column>
 			<el-table-column type="index" width="60">
 			</el-table-column>
-			<el-table-column prop="name" label="姓名" width="120" sortable>
+			<el-table-column prop="title" label="标题" width="500" sortable>
 			</el-table-column>
-			<el-table-column prop="sex" label="性别" width="100" :formatter="formatSex" sortable>
+			<el-table-column prop="author.nickname" label="作者" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="age" label="年龄" width="100" sortable>
+			<el-table-column prop="viewCounts" label="点击数量" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="birth" label="生日" width="120" sortable>
+			<el-table-column prop="commentCounts" label="评论数量" min-width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="addr" label="地址" min-width="180" sortable>
-			</el-table-column>
+      <el-table-column prop="createDate" label="创建时间" width="100" sortable>
+      </el-table-column>
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -108,6 +108,7 @@
 	import util from '@/utils/AdminUtil'
 	//import NProgress from 'nprogress'
 	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '@/api/admin';
+  import { getArticles } from '@/api/article';
 
 	export default {
 		data() {
@@ -167,15 +168,14 @@
 			},
 			//获取用户列表
 			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
+			  let query = {}
+				let page = {
+          pageNumber: this.page
 				};
 				this.listLoading = true;
 				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
+        getArticles(query,page).then((res) => {
+					this.users = res.data;
 					this.listLoading = false;
 					//NProgress.done();
 				});
