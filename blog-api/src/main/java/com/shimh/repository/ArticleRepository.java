@@ -5,6 +5,7 @@ import java.util.List;
 import com.shimh.repository.wrapper.ArticleWrapper;
 import com.shimh.vo.PageVo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,7 +18,7 @@ import com.shimh.entity.Tag;
  * <p>
  * 2018年1月25日
  */
-public interface ArticleRepository extends JpaRepository<Article, Integer>, ArticleWrapper {
+public interface ArticleRepository extends JpaRepository<Article, Integer>, JpaSpecificationExecutor<Article>, ArticleWrapper {
 
     List<Article> findByTags(Tag tag);
 
