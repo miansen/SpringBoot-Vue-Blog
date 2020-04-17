@@ -238,23 +238,4 @@ public class ArticleServiceImpl implements ArticleService {
         return articleRepository.listArchives(id);
     }
 
-	@Override
-	public Page<Article> page(final ArticleVo articleVo, final PageVo pageVo) {
-		
-		final Integer limit = StringUtils.isEmpty(pageVo.getPageNumber()) ? 0 : (pageVo.getPageNumber() - 1);
-		final Integer offset = StringUtils.isEmpty(pageVo.getPageSize()) ? 10 : pageVo.getPageSize();
-		final String sort = StringUtils.isEmpty(pageVo.getSort()) ? "createDate" : pageVo.getSort();
-		
-		return articleRepository.findAll((root, query, cb) -> {
-			List<Predicate> predicates = new ArrayList<>();
-			if (!StringUtils.isEmpty(articleVo.getTitle())) {
-				predicates.add(cb.like(root.<String>get("title"), articleVo.getTitle()));
-			}
-			if (articleVo.getAuthor() != null && !StringUtils.isEmpty(articleVo.getAuthor().getNickname())) {
-				Join<Article, User> userJoin = root.join(root.getModel().getSingularAttribute("author", User.class), JoinType.INNER);
-				predicates.add(cb.like(userJoin.get("nickname").as(String.class), "%" + articleVo.getAuthor().getNickname() + "%"));
-			}
-			return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
-		}, new PageRequest(limit, offset, new Sort(Direction.DESC, sort)));
-	}
 }

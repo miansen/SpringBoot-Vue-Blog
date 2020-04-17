@@ -4,6 +4,7 @@ package com.shimh.config;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.session.mgt.SessionManager;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.shimh.common.cache.RedisManager;
+import com.shimh.oauth.OAuthModularRealmAuthenticator;
 import com.shimh.oauth.OAuthRealm;
 import com.shimh.oauth.OAuthSessionDAO;
 import com.shimh.oauth.OAuthSessionManager;
@@ -69,10 +71,12 @@ public class ShiroConfig {
 
 
     @Bean
-    public SecurityManager securityManager(OAuthRealm oAuthRealm, SessionManager sessionManager) {
+    public SecurityManager securityManager(OAuthRealm oAuthRealm, SessionManager sessionManager, Authenticator authenticator) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(oAuthRealm);
         securityManager.setSessionManager(sessionManager);
+        // 使用自定义的认证器
+        securityManager.setAuthenticator(authenticator);
         // 自定义缓存实现 使用redis  
         //securityManager.setCacheManager(cacheManager());  
         return securityManager;
@@ -104,6 +108,15 @@ public class ShiroConfig {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
+    }
+    
+    /**
+     * 自定义认证器，不仅可以实现多 Realm 认证，还可以指定由哪个 Realm 来认证。 
+     * @return
+     */
+    @Bean
+    public OAuthModularRealmAuthenticator oauthModularRealmAuthenticator() {
+    	return new OAuthModularRealmAuthenticator();
     }
 
 }
