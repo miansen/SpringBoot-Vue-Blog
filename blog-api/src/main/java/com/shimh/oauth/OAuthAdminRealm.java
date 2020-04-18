@@ -11,6 +11,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import com.shimh.common.constant.Base;
 import com.shimh.entity.AdminUser;
@@ -36,8 +37,18 @@ public class OAuthAdminRealm extends AuthorizingRealm {
 	}
 
 	@Override
-	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-		String username = (String) token.getPrincipal();
+	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+		OAuthUsernamePasswordToken oAuthUsernamePasswordToken = null;
+		if (authenticationToken instanceof OAuthUsernamePasswordToken) {
+			oAuthUsernamePasswordToken = (OAuthUsernamePasswordToken) authenticationToken;
+		}
+		if (oAuthUsernamePasswordToken == null) {
+			throw new AuthenticationException();
+		}
+		String username = oAuthUsernamePasswordToken.getUsername();
+		if (StringUtils.isEmpty(username)) {
+			throw new IllegalArgumentException("用户名不能为空");
+		}
 		AdminUser adminUser = adminUserService.getByUsername(username);
 		if (adminUser == null) {
 			throw new UnknownAccountException();

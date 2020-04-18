@@ -36,5 +36,9 @@ public class PasswordHelper {
         user.setPassword(newPassword);
     }
 
+    public static void main(String[] args) {
+		String hex = new SimpleHash("md5", "123", null, hashIterations).toHex();
+		System.out.println(hex);
+	}
 
 }

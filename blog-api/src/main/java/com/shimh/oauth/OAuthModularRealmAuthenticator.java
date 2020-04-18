@@ -7,7 +7,6 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
-import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.realm.Realm;
 
 /**
@@ -39,9 +38,9 @@ public class OAuthModularRealmAuthenticator extends ModularRealmAuthenticator {
 		}
 		// 看看有木有特别指定哪个 Realm
 		if (oAuthUsernamePasswordToken != null) {
+			Collection<Class<? extends Realm>> realmClassList = oAuthUsernamePasswordToken.getRealmClassList();
 			for (Realm realm : realms) {
-				Collection<Class<? extends AuthorizingRealm>> realmClassList = oAuthUsernamePasswordToken.getRealmClassList();
-				for (Class<? extends AuthorizingRealm> realmClass : realmClassList) {
+				for (Class<? extends Realm> realmClass : realmClassList) {
 					if (realmClass.isInstance(realm)) {
 						assignRealms.add(realm);
 					}

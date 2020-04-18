@@ -3,7 +3,7 @@ package com.shimh.oauth;
 import java.util.Collection;
 
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.realm.Realm;
 
 /**
  * 该类是自定义登录 Token，扩展了 {@code realmClassList} 字段，该字段用来指定处理登录 Realm。
@@ -20,14 +20,14 @@ public class OAuthUsernamePasswordToken extends UsernamePasswordToken {
 	/**
 	 * Realm 的 Class 对象
 	 */
-	private final Collection<Class<? extends AuthorizingRealm>> realmClassList;
+	private final Collection<Class<? extends Realm>> realmClassList;
 
-	public OAuthUsernamePasswordToken(String username, String password, Collection<Class<? extends AuthorizingRealm>> realmClassList) {
+	public OAuthUsernamePasswordToken(String username, String password, Collection<Class<? extends Realm>> realmClassList) {
 		super(username, password);
 		this.realmClassList = realmClassList;
 	}
 
-	public Collection<Class<? extends AuthorizingRealm>> getRealmClassList() {
+	public Collection<Class<? extends Realm>> getRealmClassList() {
 		return realmClassList;
 	}
 
