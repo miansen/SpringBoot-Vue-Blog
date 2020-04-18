@@ -39,8 +39,7 @@ const router = new Router({
     {
       path: '/admin/index',
       component: AdminHome,
-      name: '仪表盘',
-      iconCls: 'el-icon-tickets',
+      name: '后台管理',
       leaf: true,
       children: [
         {
@@ -53,19 +52,13 @@ const router = new Router({
     {
       path: '/admin/index',
       component: AdminHome,
-      name: '文章管理',
-      iconCls: 'el-icon-tickets',//图标样式class
+      name: '后台管理',
+      leaf: true,
       children: [
         {
           path: '/admin/article/list',
           component: ArticleList,
-          name: "文章列表",
-          iconCls: 'el-icon-tickets'
-        },
-        {
-          path: '/admin/article/add',
-          component: AdminForm,
-          name: "文章添加"
+          name: "文章管理"
         }
       ]
     },

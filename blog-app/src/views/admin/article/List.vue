@@ -27,19 +27,20 @@
 			</el-table-column>
 			<el-table-column type="index" width="60">
 			</el-table-column>
-			<el-table-column prop="title" label="标题" width="500" sortable>
+			<el-table-column prop="title" label="标题" width="400" sortable>
 			</el-table-column>
 			<el-table-column prop="author.nickname" label="作者" width="100" sortable>
 			</el-table-column>
 			<el-table-column prop="viewCounts" label="点击数量" width="100" sortable>
 			</el-table-column>
-			<el-table-column prop="commentCounts" label="评论数量" min-width="100" sortable>
+			<el-table-column prop="commentCounts" label="评论数量" min-width="50" sortable>
 			</el-table-column>
-      <el-table-column prop="createDate" label="创建时间" width="100" sortable>
+      <el-table-column prop="createDate" label="创建时间" width="150" sortable>
       </el-table-column>
-			<el-table-column label="操作" width="150">
+			<el-table-column label="操作" width="250">
 				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button type="primary" size="small" @click="handleView(scope.$index, scope.row)">查看</el-button>
+					<el-button type="warning" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -53,26 +54,30 @@
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+        <el-form-item label="ID" prop="title" v-show="false">
+          <el-input v-model="editForm.id"></el-input>
+        </el-form-item>
+				<el-form-item label="标题" prop="title">
+					<el-input v-model="editForm.title"></el-input>
 				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
-				</el-form-item>
+        <el-form-item label="摘要" prop="summary">
+          <el-input v-model="editForm.summary"></el-input>
+        </el-form-item>
+        <el-form-item label="正文" prop="body">
+          <markdown-editor :editor="editor" class="me-write-editor"></markdown-editor>
+        </el-form-item>
+        <el-form-item label="文章分类" prop="category">
+          <el-select v-model="editForm.category" value-key="id" placeholder="请选择文章分类">
+            <el-option v-for="c in categories" :key="c.id" :label="c.categoryname" :value="c"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="文章标签" prop="tags">
+          <el-checkbox-group v-model="editForm.tags">
+            <el-checkbox v-for="t in tags" :key="t.id" :label="t.id" name="tags" :value="t">{{t.tagname}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取消</el-button>
@@ -115,14 +120,54 @@
 	//import NProgress from 'nprogress'
 	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '@/api/admin';
   import { getArticles } from '@/api/article';
-  import { AdminArticleListAPI } from '@/api/admin';
+  import { AdminArticleListAPI, AdminArticleUpdateAPI, AdminArticleDeleteAPI, AdminArticleBatchDeleteAPI } from '@/api/admin';
+  import { getAllCategorys } from '@/api/category';
+  import {getAllTags} from '@/api/tag';
+  import MarkdownEditor from '@/components/markdown/MarkdownEditor';
 
 	export default {
+    components: {
+      'markdown-editor': MarkdownEditor
+    },
 		data() {
 			return {
 				filters: {
 					name: ''
 				},
+        // 类别数组
+        categories: [],
+        // 标签数组
+        tags: [],
+        // 编辑器
+        editor: {
+          value: '',
+          ref: '',//保存mavonEditor实例  实际不该这样
+          default_open: 'edit',
+          toolbars: {
+            bold: true, // 粗体
+            italic: true, // 斜体
+            header: true, // 标题
+            underline: true, // 下划线
+            strikethrough: true, // 中划线
+            mark: true, // 标记
+            superscript: true, // 上角标
+            subscript: true, // 下角标
+            quote: true, // 引用
+            ol: true, // 有序列表
+            ul: true, // 无序列表
+            imagelink: true, // 图片链接
+            code: true, // code
+            fullscreen: true, // 全屏编辑
+            readmodel: true, // 沉浸式阅读
+            help: true, // 帮助
+            undo: true, // 上一步
+            redo: true, // 下一步
+            trash: true, // 清空
+            navigation: true, // 导航目录
+            //subfield: true, // 单双栏模式
+            preview: true, // 预览
+          }
+        },
         // 文章列表
 				articles: [],
         // 搜索对象
@@ -150,18 +195,19 @@
 				editFormVisible: false,
 				editLoading: false,
 				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
+					title: [
+						{ required: true, message: '请输入标题', trigger: 'blur' }
 					]
 				},
-				//编辑界面数据
+
+				//编辑界面的数据
 				editForm: {
+				  id: '',
 					title: '',
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
+          summary: '',
+          body: {},
+          category: {},
+          tags: []
 				},
 
 				addFormVisible: false,//新增界面是否显示
@@ -214,15 +260,14 @@
 				});
 			},
 
-			//删除
+			// 删除
 			handleDel: function (index, row) {
 				this.$confirm('确认删除该记录吗?', '提示', {
 					type: 'warning'
 				}).then(() => {
+          let that = this;
 					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
+          AdminArticleDeleteAPI({id: row.id}).then((res) => {
 						this.listLoading = false;
 						//NProgress.done();
 						this.$message({
@@ -230,16 +275,35 @@
 							type: 'success'
 						});
 						this.getAdminArticleList();
-					});
-				}).catch(() => {
-
+					}).catch(error => {
+            if (error !== 'error') {
+              that.editLoading = false;
+              that.$message({message: error, type: 'error', showClose: true});
+            }
+          });
 				});
 			},
-			//显示编辑界面
+
+      handleView: function(index, row) {
+			  window.open('/#/view/' + row.id);
+      },
+
+			// 显示编辑界面
 			handleEdit: function (index, row) {
+			  console.log(row);
 				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
+				this.editForm.id = row.id;
+				this.editForm.title = row.title;
+				this.editForm.summary = row.summary;
+				this.editForm.category = row.category;
+				// 把标签对象数组转为 ID 数组，否则 v-model 无法绑定
+				this.editForm.tags = row.tags.map(function (item) {
+          return item.id;
+        });
+				this.editor.value = row.body.contentHtml;
+        console.log(this.editForm);
 			},
+
 			//显示新增界面
 			handleAdd: function () {
 				this.addFormVisible = true;
@@ -251,26 +315,36 @@
 					addr: ''
 				};
 			},
-			//编辑
+
+			// 提交编辑
 			editSubmit: function () {
 				this.$refs.editForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
+						  let that = this;
 							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getAdminArticleList();
-							});
+							this.editForm.body.contentHtml = this.editor.value;
+							let tagIds = this.editForm.tags;
+							// 把 ID 数组转为对象数组，否则无法映射到后台的接口
+							this.editForm.tags = tagIds.map(function (id) {
+                return {id: id};
+              })
+              AdminArticleUpdateAPI(this.editForm).then((res) => {
+                that.editLoading = false;
+                if (res.data.code == 0) {
+                  that.$message({message: '更新成功', type: 'success'});
+                  this.$refs['editForm'].resetFields();
+                  this.editFormVisible = false;
+                  this.getAdminArticleList();
+                } else {
+                  that.$message({message: res.data.errdetail, type: 'error'});
+                }
+							}).catch(error => {
+                if (error !== 'error') {
+                  that.editLoading = false;
+                  that.$message({message: error, type: 'error', showClose: true});
+                }
+              });
 						});
 					}
 				});
@@ -304,16 +378,14 @@
 			},
 			//批量删除
 			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
+				let ids = this.sels.map(item => item.id).toString();
 				this.$confirm('确认删除选中记录吗？', '提示', {
 					type: 'warning'
 				}).then(() => {
 					this.listLoading = true;
-					//NProgress.start();
 					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
+          AdminArticleBatchDeleteAPI(para).then((res) => {
 						this.listLoading = false;
-						//NProgress.done();
 						this.$message({
 							message: '删除成功',
 							type: 'success'
@@ -323,10 +395,31 @@
 				}).catch(() => {
 
 				});
-			}
+			},
+      // 加载分类和标签
+      getCategorysAndTags() {
+        let that = this
+        getAllCategorys().then(data => {
+          that.categories = data.data
+        }).catch(error => {
+          if (error !== 'error') {
+            that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+          }
+        })
+
+        getAllTags().then(data => {
+          that.tags = data.data
+        }).catch(error => {
+          if (error !== 'error') {
+            that.$message({type: 'error', message: '标签加载失败', showClose: true})
+          }
+        })
+
+      }
 		},
 		mounted() {
 			this.getAdminArticleList();
+      this.getCategorysAndTags();
 		}
 	}
 

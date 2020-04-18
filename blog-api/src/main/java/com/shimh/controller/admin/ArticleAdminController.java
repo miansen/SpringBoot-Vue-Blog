@@ -1,5 +1,8 @@
 package com.shimh.controller.admin;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,10 +49,18 @@ public class ArticleAdminController {
 		return result;
 	}
 	
-	@RequestMapping(value = "/delete")
+	@GetMapping(value = "/delete")
 	@RequiresRoles(value = "admin")
 	@LogAnnotation(module = "文章管理", operation = "删除文章")
-	public Result delete(@RequestParam(name = "ids") Integer[] ids) {
+	public Result delete(@RequestParam(name = "id") Integer id) {
+		articleAdminService.remove(id);
+		return Result.success();
+	}
+	
+	@GetMapping(value = "/delete/batch")
+	@RequiresRoles(value = "admin")
+	@LogAnnotation(module = "文章管理", operation = "批量删除文章")
+	public Result batchDelete(@RequestParam(name = "ids") Integer[] ids) {
 		articleAdminService.remove(ids);
 		return Result.success();
 	}
@@ -58,15 +69,15 @@ public class ArticleAdminController {
 	@RequiresRoles(value = "admin")
 	@FastJsonView(
 			exclude = {
-					@FastJsonFilter(clazz = Article.class, props = {"body", "comments"}),
-                    @FastJsonFilter(clazz = Tag.class, props = {"id", "avatar"})
+					@FastJsonFilter(clazz = Article.class, props = {"comments"})
                     },
             include = {
             		@FastJsonFilter(clazz = User.class, props = {"nickname","id"})
             		})
 	@LogAnnotation(module = "文章管理", operation = "查询文章")
-	public Result list(AdminArticleVO adminArticleVO, PageVo pageVo) {
+	public Result list(AdminArticleVO adminArticleVO, PageVo pageVo, HttpServletRequest request, HttpSession session) {
 		Page<Article> page = articleAdminService.page(adminArticleVO, pageVo);
+		HttpSession session2 = request.getSession();
 		return Result.success(page);
 	}
 }

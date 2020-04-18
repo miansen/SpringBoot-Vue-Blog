@@ -4,6 +4,7 @@ import {Message} from 'element-ui';
 
 export const AdminLoginAPI = params => { return service.post('/login', params).then(res => res.data); };
 
+// 文章列表接口
 export const AdminArticleListAPI = (title, author, pageNumber, pageSize) => {
   return service.get('/article/list', {
     params: {
@@ -14,6 +15,15 @@ export const AdminArticleListAPI = (title, author, pageNumber, pageSize) => {
     }
   });
 };
+
+// 更新文章接口
+export const AdminArticleUpdateAPI = article => {return service.post('/article/update', article);};
+
+// 删除文章接口
+export const AdminArticleDeleteAPI = params => {return service.get('/article/delete', {params: params});};
+
+// 批量删除文章接口
+export const AdminArticleBatchDeleteAPI = params => { return service.get('/article/delete/batch', { params: params }); };
 
 export const removeUser = params => { return service.get('/user/remove', { params: params }); };
 
