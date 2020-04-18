@@ -2,21 +2,27 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;padding: 10px;margin: 10px 0;">
-			<el-form :inline="true" :model="filters">
+			<el-form :inline="true" :model="articleVo">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+					<el-input v-model="articleVo.title" placeholder="标题"></el-input>
 				</el-form-item>
+        <el-form-item>
+          <el-input v-model="articleVo.author" placeholder="作者"></el-input>
+        </el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getAdminArticleList">查询</el-button>
 				</el-form-item>
-				<el-form-item>
+        <el-form-item>
+          <el-button type="primary" v-on:click="getAllAdminArticleList">全部</el-button>
+        </el-form-item>
+				<!--<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item>
+				</el-form-item>-->
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+		<el-table :data="articles" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column type="index" width="60">
@@ -42,7 +48,7 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding: 10px;margin: 10px 0;">
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="pageVo.pageSize" :total="pageVo.pageTotal" style="float:right;">
 			</el-pagination>
 		</el-col>
 
@@ -109,6 +115,7 @@
 	//import NProgress from 'nprogress'
 	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '@/api/admin';
   import { getArticles } from '@/api/article';
+  import { AdminArticleListAPI } from '@/api/admin';
 
 	export default {
 		data() {
@@ -116,13 +123,31 @@
 				filters: {
 					name: ''
 				},
-				users: [],
-				total: 0,
-				page: 1,
-				listLoading: false,
-				sels: [],//列表选中列
+        // 文章列表
+				articles: [],
+        // 搜索对象
+        articleVo: {
+				  // 文章标题
+				  title: '',
+          // 作者名字
+          author: ''
+        },
+        // 分页对象
+        pageVo: {
+          // 总共有多少条数据
+          pageTotal: 0,
+          // 当前是第几页
+          pageNumber: 1,
+          // 每页显示多少条数据
+          pageSize: 10,
+        },
 
-				editFormVisible: false,//编辑界面是否显示
+        // 正在加载中？
+				listLoading: false,
+        // 列表选中列
+				sels: [],
+        // 编辑界面是否显示
+				editFormVisible: false,
 				editLoading: false,
 				editFormRules: {
 					name: [
@@ -131,7 +156,7 @@
 				},
 				//编辑界面数据
 				editForm: {
-					id: 0,
+					title: '',
 					name: '',
 					sex: -1,
 					age: 0,
@@ -162,24 +187,33 @@
 			formatSex: function (row, column) {
 				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
 			},
-			handleCurrentChange(val) {
-				this.page = val;
-				this.getUsers();
+      // 点击了分页
+			handleCurrentChange(pageNumber) {
+				this.pageVo.pageNumber = pageNumber;
+				this.getAdminArticleList();
 			},
-			//获取用户列表
-			getUsers() {
-			  let query = {}
-				let page = {
-          pageNumber: this.page
-				};
-				this.listLoading = true;
-				//NProgress.start();
-        getArticles(query,page).then((res) => {
-					this.users = res.data;
-					this.listLoading = false;
-					//NProgress.done();
+
+      getAllAdminArticleList() {
+			  this.articleVo.title = '';
+			  this.articleVo.author = '';
+        this.getAdminArticleList();
+      },
+
+			// 获取文章列表
+      getAdminArticleList() {
+			  let that = this;
+			  let title = that.articleVo.title;
+        let author = that.articleVo.author;
+        let pageNumber = that.pageVo.pageNumber;
+        let pageSize = that.pageVo.pageSize;
+        that.listLoading = true;
+        AdminArticleListAPI(title, author, pageNumber, pageSize).then((res) => {
+          that.articles = res.data.data.content;
+          that.pageVo.pageTotal = res.data.data.totalElements;
+          that.listLoading = false;
 				});
 			},
+
 			//删除
 			handleDel: function (index, row) {
 				this.$confirm('确认删除该记录吗?', '提示', {
@@ -195,7 +229,7 @@
 							message: '删除成功',
 							type: 'success'
 						});
-						this.getUsers();
+						this.getAdminArticleList();
 					});
 				}).catch(() => {
 
@@ -235,7 +269,7 @@
 								});
 								this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
-								this.getUsers();
+								this.getAdminArticleList();
 							});
 						});
 					}
@@ -259,7 +293,7 @@
 								});
 								this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
-								this.getUsers();
+								this.getAdminArticleList();
 							});
 						});
 					}
@@ -284,7 +318,7 @@
 							message: '删除成功',
 							type: 'success'
 						});
-						this.getUsers();
+						this.getAdminArticleList();
 					});
 				}).catch(() => {
 
@@ -292,7 +326,7 @@
 			}
 		},
 		mounted() {
-			this.getUsers();
+			this.getAdminArticleList();
 		}
 	}
 

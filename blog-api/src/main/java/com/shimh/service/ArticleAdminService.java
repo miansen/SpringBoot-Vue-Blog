@@ -3,6 +3,7 @@ package com.shimh.service;
 import org.springframework.data.domain.Page;
 
 import com.shimh.entity.Article;
+import com.shimh.vo.AdminArticleVO;
 import com.shimh.vo.ArticleVo;
 import com.shimh.vo.PageVo;
 
@@ -22,6 +23,6 @@ public interface ArticleAdminService {
 	
 	void remove(Integer[] ids);
 	
-	Page<Article> page(final ArticleVo articleVo, final PageVo pageVo);
+	Page<Article> page(final AdminArticleVO articleVo, final PageVo pageVo);
 	
 }

@@ -1,8 +1,9 @@
 package com.shimh.controller.admin;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import com.shimh.entity.Article;
 import com.shimh.entity.Tag;
 import com.shimh.entity.User;
 import com.shimh.service.ArticleAdminService;
+import com.shimh.vo.AdminArticleVO;
 import com.shimh.vo.ArticleVo;
 import com.shimh.vo.PageVo;
 
@@ -35,7 +37,7 @@ public class ArticleAdminController {
     private ArticleAdminService articleAdminService;
 	
 	@PostMapping("/update")
-	@RequiresAuthentication
+	@RequiresRoles(value = "admin")
 	@LogAnnotation(module = "文章管理", operation = "更新文章")
 	public Result update(@RequestBody Article article) {
 		articleAdminService.update(article);
@@ -45,15 +47,15 @@ public class ArticleAdminController {
 	}
 	
 	@RequestMapping(value = "/delete")
-	@RequiresAuthentication
+	@RequiresRoles(value = "admin")
 	@LogAnnotation(module = "文章管理", operation = "删除文章")
 	public Result delete(@RequestParam(name = "ids") Integer[] ids) {
 		articleAdminService.remove(ids);
 		return Result.success();
 	}
 
-	@RequestMapping(value = "/list")
-	@RequiresAuthentication
+	@GetMapping(value = "/list")
+	@RequiresRoles(value = "admin")
 	@FastJsonView(
 			exclude = {
 					@FastJsonFilter(clazz = Article.class, props = {"body", "comments"}),
@@ -63,8 +65,8 @@ public class ArticleAdminController {
             		@FastJsonFilter(clazz = User.class, props = {"nickname","id"})
             		})
 	@LogAnnotation(module = "文章管理", operation = "查询文章")
-	public Result list(ArticleVo articleVo, PageVo pageVo) {
-		Page<Article> page = articleAdminService.page(articleVo, pageVo);
+	public Result list(AdminArticleVO adminArticleVO, PageVo pageVo) {
+		Page<Article> page = articleAdminService.page(adminArticleVO, pageVo);
 		return Result.success(page);
 	}
 }
