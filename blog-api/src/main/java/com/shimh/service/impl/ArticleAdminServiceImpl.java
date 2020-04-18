@@ -22,7 +22,7 @@ import com.shimh.entity.Article;
 import com.shimh.entity.User;
 import com.shimh.repository.ArticleAdminRepository;
 import com.shimh.service.ArticleAdminService;
-import com.shimh.vo.AdminArticleVO;
+import com.shimh.vo.ArticleAdminVo;
 import com.shimh.vo.ArticleVo;
 import com.shimh.vo.PageVo;
 
@@ -74,7 +74,7 @@ public class ArticleAdminServiceImpl implements ArticleAdminService {
 	}
 	
 	@Override
-	public Page<Article> page(final AdminArticleVO adminArticleVO, final PageVo pageVo) {
+	public Page<Article> page(final ArticleAdminVo adminArticleVO, final PageVo pageVo) {
 		
 		final Integer limit = StringUtils.isEmpty(pageVo.getPageNumber()) ? 0 : (pageVo.getPageNumber() - 1);
 		final Integer offset = StringUtils.isEmpty(pageVo.getPageSize()) ? 10 : pageVo.getPageSize();
@@ -91,6 +91,13 @@ public class ArticleAdminServiceImpl implements ArticleAdminService {
 			}
 			return query.where(predicates.toArray(new Predicate[predicates.size()])).getRestriction();
 		}, new PageRequest(limit, offset, new Sort(Direction.DESC, sort)));
+	}
+
+	@Override
+	public List<Article> listByAuthorId(Long authorId) {
+		User user = new User();
+		user.setId(authorId);
+		return articleAdminRepository.findByAuthor(user);
 	}
 
 }

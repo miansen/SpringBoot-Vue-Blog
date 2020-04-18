@@ -17,7 +17,8 @@ import AdminMain from '@/views/admin/AdminMain.vue'
 import AdminForm from '@/views/admin/nav1/AdminForm.vue'
 import AdminTable from '@/views/admin/nav1/AdminTable.vue'
 import AdminUser from '@/views/admin/nav1/AdminUser.vue'
-import ArticleList from '@/views/admin/article/List.vue'
+import ArticleList from '@/views/admin/article/List.vue';
+import UserList from '@/views/admin/user/List.vue';
 
 import {Message} from 'element-ui';
 
@@ -65,52 +66,17 @@ const router = new Router({
     {
       path: '/admin/index',
       component: AdminHome,
-      name: '评论管理',
-      iconCls: 'el-icon-tickets',//图标样式class
+      name: '后台管理',
+      leaf: true,
       children: [
         {
-          path: '/admin/comment/list',
-          component: AdminTable,
-          name: "评论列表"
+          path: '/admin/user/list',
+          component: UserList,
+          name: "用户管理"
         }
       ]
     },
-    {
-      path: '/admin/index',
-      component: AdminHome,
-      name: '屏蔽词管理',
-      iconCls: 'el-icon-tickets',//图标样式class
-      children: [
-        {
-          path: '/admin/shield/list',
-          component: AdminTable,
-          name: "屏蔽词列表"
-        },
-        {
-          path: '/admin/shield/add',
-          component: AdminForm,
-          name: "屏蔽词添加"
-        }
-      ]
-    },
-    {
-      path: '/admin/index',
-      component: AdminHome,
-      name: '分类管理',
-      iconCls: 'el-icon-tickets',//图标样式class
-      children: [
-        {
-          path: '/admin/category/list',
-          component: AdminTable,
-          name: "分类列表"
-        },
-        {
-          path: '/admin/category/add',
-          component: AdminForm,
-          name: "分类添加"
-        }
-      ]
-    },
+
     /**************************** Admin Routes End ****************************/
 
     {

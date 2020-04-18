@@ -4,7 +4,7 @@ package com.shimh.vo;
  * @author miansen.wang
  * @date 2020-04-18
  */
-public class AdminArticleVO {
+public class ArticleAdminVo {
 
 	private String title;
 	

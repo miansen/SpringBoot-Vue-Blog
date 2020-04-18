@@ -17,67 +17,69 @@ import com.alibaba.fastjson.support.spring.annotation.FastJsonFilter;
 import com.alibaba.fastjson.support.spring.annotation.FastJsonView;
 
 import com.shimh.common.annotation.LogAnnotation;
+import com.shimh.common.constant.ResultCode;
 import com.shimh.common.result.Result;
-import com.shimh.entity.Article;
-import com.shimh.entity.Tag;
 import com.shimh.entity.User;
 import com.shimh.service.ArticleAdminService;
-import com.shimh.vo.ArticleAdminVo;
-import com.shimh.vo.ArticleVo;
+import com.shimh.service.UserAdminService;
 import com.shimh.vo.PageVo;
+import com.shimh.vo.UserAdminVo;
 
 /**
- * 文章管理 API
+ * 用户管理 API
  * 
  * @author miansen.wang
  * @date 2020-04-16
  */
 @RestController
-@RequestMapping(value = "/admin/article")
-public class ArticleAdminController {
+@RequestMapping(value = "/admin/user")
+public class UserAdminController {
 
 	@Autowired
-    private ArticleAdminService articleAdminService;
+    private UserAdminService userAdminService;
+	
+	@PostMapping("/save")
+	@RequiresRoles(value = "admin")
+	@LogAnnotation(module = "用户管理", operation = "添加用户")
+	public Result save(@RequestBody User user) {
+		userAdminService.save(user);
+		Result result = Result.success();
+		result.simple().put("articleId", user.getId());
+		return result;
+	}
 	
 	@PostMapping("/update")
 	@RequiresRoles(value = "admin")
-	@LogAnnotation(module = "文章管理", operation = "更新文章")
-	public Result update(@RequestBody Article article) {
-		articleAdminService.update(article);
+	@LogAnnotation(module = "用户管理", operation = "更新用户")
+	public Result update(@RequestBody User user) {
+		userAdminService.update(user);
 		Result result = Result.success();
-		result.simple().put("articleId", article.getId());
+		result.simple().put("articleId", user.getId());
 		return result;
 	}
 	
 	@GetMapping(value = "/delete")
 	@RequiresRoles(value = "admin")
-	@LogAnnotation(module = "文章管理", operation = "删除文章")
-	public Result delete(@RequestParam(name = "id") Integer id) {
-		articleAdminService.remove(id);
+	@LogAnnotation(module = "用户管理", operation = "删除用户")
+	public Result delete(@RequestParam(name = "id") Long id) {
+		userAdminService.remove(id);
 		return Result.success();
 	}
 	
 	@GetMapping(value = "/delete/batch")
 	@RequiresRoles(value = "admin")
-	@LogAnnotation(module = "文章管理", operation = "批量删除文章")
-	public Result batchDelete(@RequestParam(name = "ids") Integer[] ids) {
-		articleAdminService.remove(ids);
+	@LogAnnotation(module = "用户管理", operation = "批量删除用户")
+	public Result batchDelete(@RequestParam(name = "ids") Long[] ids) {
+		userAdminService.remove(ids);
 		return Result.success();
 	}
 
 	@GetMapping(value = "/list")
 	@RequiresRoles(value = "admin")
-	@FastJsonView(
-			exclude = {
-					@FastJsonFilter(clazz = Article.class, props = {"comments"})
-                    },
-            include = {
-            		@FastJsonFilter(clazz = User.class, props = {"nickname","id"})
-            		})
-	@LogAnnotation(module = "文章管理", operation = "查询文章")
-	public Result list(ArticleAdminVo adminArticleVO, PageVo pageVo, HttpServletRequest request, HttpSession session) {
-		Page<Article> page = articleAdminService.page(adminArticleVO, pageVo);
-		HttpSession session2 = request.getSession();
+	@FastJsonView(exclude = {@FastJsonFilter(clazz = User.class, props = {"password"})})
+	@LogAnnotation(module = "用户管理", operation = "查询用户")
+	public Result list(UserAdminVo userAdminVo, PageVo pageVo) {
+		Page<User> page = userAdminService.page(userAdminVo, pageVo);
 		return Result.success(page);
 	}
 }

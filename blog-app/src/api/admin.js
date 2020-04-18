@@ -25,6 +25,25 @@ export const AdminArticleDeleteAPI = params => {return service.get('/article/del
 // 批量删除文章接口
 export const AdminArticleBatchDeleteAPI = params => { return service.get('/article/delete/batch', { params: params }); };
 
+
+// 用户列表接口
+export const AdminUserListAPI = params => {return service.get('/user/list', {params: params})};
+
+// 添加用户接口
+export const AdminUserAddAPI = user => {return service.post('/user/save', user)};
+
+// 更新用户接口
+export const AdminUserUpdateAPI = user => {return service.post('/user/update', user)};
+
+// 删除用户接口
+export const AdminUserDeleteAPI = params => {return service.get('/user/delete', {params: params})};
+
+// 批量删除用户接口
+export const AdminUserBatchDeleteAPI = params => { return service.get('/user/delete/batch', { params: params })};
+
+
+
+
 export const removeUser = params => { return service.get('/user/remove', { params: params }); };
 
 export const batchRemoveUser = params => { return service.get('/user/batchremove', { params: params }); };
