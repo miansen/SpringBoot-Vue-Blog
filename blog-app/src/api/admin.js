@@ -39,7 +39,23 @@ export const AdminUserUpdateAPI = user => {return service.post('/user/update', u
 export const AdminUserDeleteAPI = params => {return service.get('/user/delete', {params: params})};
 
 // 批量删除用户接口
-export const AdminUserBatchDeleteAPI = params => { return service.get('/user/delete/batch', { params: params })};
+export const AdminUserBatchDeleteAPI = params => { return service.get('/user/delete/batch', { params: params })};44
+
+
+// 敏感词列表接口
+export const AdminSensitiveWordListAPI = params => {return service.get('/sensitiveword/list', {params: params})};
+
+// 添加敏感词接口
+export const AdminSensitiveWordAddAPI = user => {return service.post('/sensitiveword/save', user)};
+
+// 更新敏感词接口
+export const AdminSensitiveWordUpdateAPI = user => {return service.post('/sensitiveword/update', user)};
+
+// 删除敏感词接口
+export const AdminSensitiveWordDeleteAPI = params => {return service.get('/sensitiveword/delete', {params: params})};
+
+// 批量删除敏感词接口
+export const AdminSensitiveWordBatchDeleteAPI = params => { return service.get('/sensitiveword/delete/batch', { params: params })};
 
 
 

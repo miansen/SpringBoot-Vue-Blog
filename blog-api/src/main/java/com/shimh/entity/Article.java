@@ -93,6 +93,9 @@ public class Article extends BaseEntity<Integer> {
     @Column(name = "create_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;
+    
+    @Column(name = "status_cd", length = 11)
+    private  Integer statusCd;
 
 
     public String getTitle() {
@@ -204,5 +207,14 @@ public class Article extends BaseEntity<Integer> {
         this.createDate = createDate;
     }
 
+
+	public Integer getStatusCd() {
+		return statusCd;
+	}
+
+
+	public void setStatusCd(Integer statusCd) {
+		this.statusCd = statusCd;
+	}
 
 }

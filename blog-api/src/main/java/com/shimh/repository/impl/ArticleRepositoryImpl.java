@@ -84,6 +84,10 @@ public class ArticleRepositoryImpl implements ArticleWrapper {
         if (article.getTitle() != null && !"".equals(article.getTitle())) {
         	hql.append(" and a.title like :title");
         }
+        
+        if (article.getStatusCd() != null) {
+        	hql.append(" and a.statusCd = :statusCd");
+        }
 
         if (null != page.getName() && !"".equals(page.getName())) {
             hql.append(" order by ");
@@ -120,6 +124,10 @@ public class ArticleRepositoryImpl implements ArticleWrapper {
         
         if (article.getTitle() != null && !"".equals(article.getTitle())) {
         	query.setParameter("title", "%" + article.getTitle() + "%");
+        }
+        
+        if (article.getStatusCd() != null) {
+        	query.setParameter("statusCd", article.getStatusCd());
         }
 
         if (null != page.getPageNumber() && null != page.getPageSize()) {

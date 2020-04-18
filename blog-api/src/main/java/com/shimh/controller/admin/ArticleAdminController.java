@@ -45,7 +45,7 @@ public class ArticleAdminController {
 	public Result update(@RequestBody Article article) {
 		articleAdminService.update(article);
 		Result result = Result.success();
-		result.simple().put("articleId", article.getId());
+		result.simple().put("id", article.getId());
 		return result;
 	}
 	

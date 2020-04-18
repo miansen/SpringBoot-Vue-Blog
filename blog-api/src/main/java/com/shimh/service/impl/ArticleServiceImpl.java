@@ -33,6 +33,7 @@ import com.shimh.common.util.UserUtils;
 import com.shimh.config.IntegralConfig;
 import com.shimh.repository.ArticleRepository;
 import com.shimh.service.ArticleService;
+import com.shimh.service.SensitiveWordService;
 
 /**
  * @author shimh
@@ -51,6 +52,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
     private IntegralConfig integralConfig;
+    
+    @Autowired
+    private SensitiveWordService sensitiveWordService;
 
     @Override
     public List<Article> listArticles(PageVo page) {
@@ -60,7 +64,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> listArticles(ArticleVo article, PageVo page) {
-
+    	article.setStatusCd(1000);
         return articleRepository.listArticles(article, page);
     }
 
@@ -98,6 +102,34 @@ public class ArticleServiceImpl implements ArticleService {
 
         article.setCreateDate(new Date());
         article.setWeight(Article.Article_Common);
+        
+        String content = article.getBody().getContent();
+        
+        List<SensitiveWord> sensitiveWords = sensitiveWordService.getAll();
+        
+        for (SensitiveWord sensitiveWord : sensitiveWords) {
+        	String word = sensitiveWord.getWord();
+        	
+        	if ((article.getTitle().indexOf(word)) != -1) {
+        		article.setStatusCd(1100);
+        		break;
+        	}
+        	
+        	if ((article.getSummary().indexOf(word)) != -1) {
+        		article.setStatusCd(1100);
+        		break;
+        	}
+        	
+        	if (content.indexOf(word) != -1) {
+        		article.setStatusCd(1100);
+        		break;
+        	}
+		}
+        
+        if (article.getStatusCd() == null) {
+        	article.setStatusCd(1000);
+        }
+        
         Integer articleId = articleRepository.save(article).getId();
         currentUser.setIntegral(currentUser.getIntegral() + integralConfig.getCreateArticle());
         userRepository.save(currentUser);

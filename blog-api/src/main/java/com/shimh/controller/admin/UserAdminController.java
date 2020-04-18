@@ -44,7 +44,7 @@ public class UserAdminController {
 	public Result save(@RequestBody User user) {
 		userAdminService.save(user);
 		Result result = Result.success();
-		result.simple().put("articleId", user.getId());
+		result.simple().put("id", user.getId());
 		return result;
 	}
 	
@@ -54,7 +54,7 @@ public class UserAdminController {
 	public Result update(@RequestBody User user) {
 		userAdminService.update(user);
 		Result result = Result.success();
-		result.simple().put("articleId", user.getId());
+		result.simple().put("id", user.getId());
 		return result;
 	}
 	

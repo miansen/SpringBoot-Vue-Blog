@@ -19,6 +19,7 @@ import AdminTable from '@/views/admin/nav1/AdminTable.vue'
 import AdminUser from '@/views/admin/nav1/AdminUser.vue'
 import ArticleList from '@/views/admin/article/List.vue';
 import UserList from '@/views/admin/user/List.vue';
+import SensitiveWordList from '@/views/admin/sensitiveword/List.vue';
 
 import {Message} from 'element-ui';
 
@@ -73,6 +74,19 @@ const router = new Router({
           path: '/admin/user/list',
           component: UserList,
           name: "用户管理"
+        }
+      ]
+    },
+    {
+      path: '/admin/index',
+      component: AdminHome,
+      name: '后台管理',
+      leaf: true,
+      children: [
+        {
+          path: '/admin/sensitiveword/list',
+          component: SensitiveWordList,
+          name: "敏感词管理"
         }
       ]
     },

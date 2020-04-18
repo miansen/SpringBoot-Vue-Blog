@@ -11,13 +11,13 @@
       <el-main>
 
         <div class="me-view-card">
-          <h1 class="me-view-title">{{article.title}}</h1>
+          <h1 class="me-view-title" :style="{'color': article.statusCd == 1100 ? '#F44336' : '#333'}">{{article.title}}</h1>
           <div class="me-view-author">
             <a class="">
               <img class="me-view-picture" :src="article.author.avatar"></img>
             </a>
             <div class="me-view-info">
-              <span>{{article.author.nickname}}</span>
+              <span :style="{'color': article.statusCd == 1100 ? '#F44336' : '#333'}">{{article.author.nickname}}</span>
               <div class="me-view-meta">
                 <span>{{article.createDate | format}}</span>
                 <span>阅读   {{article.viewCounts}}</span>
