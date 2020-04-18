@@ -58,6 +58,20 @@ export const AdminSensitiveWordDeleteAPI = params => {return service.get('/sensi
 export const AdminSensitiveWordBatchDeleteAPI = params => { return service.get('/sensitiveword/delete/batch', { params: params })};
 
 
+// 分类列表接口
+export const Admin_Category_List_API = params => {return service.get('/category/list', {params: params})};
+
+// 添加分类接口
+export const Admin_Category_Save_API = user => {return service.post('/category/save', user)};
+
+// 更新分类接口
+export const Admin_Category_Update_API = user => {return service.post('/category/update', user)};
+
+// 删除分类接口
+export const Admin_Category_Delete_API = params => {return service.get('/category/delete', {params: params})};
+
+// 批量删除分类接口
+export const Admin_Category_Batch_Delete_API = params => { return service.get('/category/delete/batch', { params: params })};
 
 
 export const removeUser = params => { return service.get('/user/remove', { params: params }); };

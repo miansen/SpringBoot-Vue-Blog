@@ -20,6 +20,7 @@ import AdminUser from '@/views/admin/nav1/AdminUser.vue'
 import ArticleList from '@/views/admin/article/List.vue';
 import UserList from '@/views/admin/user/List.vue';
 import SensitiveWordList from '@/views/admin/sensitiveword/List.vue';
+import AdminCategoryList from '@/views/admin/category/List.vue';
 
 import {Message} from 'element-ui';
 
@@ -87,6 +88,19 @@ const router = new Router({
           path: '/admin/sensitiveword/list',
           component: SensitiveWordList,
           name: "敏感词管理"
+        }
+      ]
+    },
+    {
+      path: '/admin/index',
+      component: AdminHome,
+      name: '后台管理',
+      leaf: true,
+      children: [
+        {
+          path: '/admin/category/list',
+          component: AdminCategoryList,
+          name: "分类管理"
         }
       ]
     },

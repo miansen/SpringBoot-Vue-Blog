@@ -1,11 +1,17 @@
 package com.shimh.entity;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.shimh.common.entity.BaseEntity;
 
 /**
@@ -31,7 +37,11 @@ public class Category extends BaseEntity<Integer> {
 
     @NotBlank
     private String avatar;
-
+    
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "create_date")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createDate;
 
     public String getCategoryname() {
         return categoryname;
@@ -57,4 +67,12 @@ public class Category extends BaseEntity<Integer> {
         this.avatar = avatar;
     }
 
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+    
 }
