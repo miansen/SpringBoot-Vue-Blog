@@ -1,9 +1,16 @@
 <template>
+
   <div v-title :data-title="title">
     <el-container>
-      <el-main class="me-articles">
-        <div class="me-month-title">搜索结果</div>
-        <article-scroll-page v-bind="article"></article-scroll-page>
+      <el-main class="me-ct-container" style="width: 700px;">
+        <div class="movie-head">
+          <a @click="clickHandle('in_theaters')" class="movie-head-item" :style="{'color': type == 'in_theaters' ? '#27a' : '#333'}">正在热映</a>
+          <a @click="clickHandle('coming_soon')" class="movie-head-item" :style="{'color': type == 'coming_soon' ? '#27a' : '#333'}">即将上映</a>
+          <a @click="clickHandle('new_movies')" class="movie-head-item" :style="{'color': type == 'new_movies' ? '#27a' : '#333'}">新片榜</a>
+          <a v-if="false" @click="clickHandle('weekly')" class="movie-head-item" :style="{'color': type == 'weekly' ? '#27a' : '#333'}">口碑榜</a>
+          <a @click="clickHandle('top250')" class="movie-head-item" :style="{'color': type == 'top250' ? '#27a' : '#333'}">TOP250</a>
+        </div>
+        <movie-scroll-page v-bind="article"></movie-scroll-page>
       </el-main>
     </el-container>
   </div>
@@ -11,13 +18,13 @@
 </template>
 
 <script>
-  import ArticleScrollPage from '@/views/common/ArticleScrollPage'
+  import MovieScrollPage from '@/views/common/MovieScrollPage'
   import {listSearchArchives} from '@/api/article'
 
   export default {
-    name: "BlogArchive",
+    name: "BlogMovie",
     components: {
-      ArticleScrollPage
+      "movie-scroll-page": MovieScrollPage
     },
     data() {
       return {
@@ -25,55 +32,34 @@
           query: {
             title: this.$route.query.key
           }
-        }
+        },
+        type: this.$route.params.type
+      }
+    },
+    inject: [
+      'reload'
+    ],
+    methods: {
+      clickHandle(type) {
+        this.$router.push({path: `/movies/list/${type}`});
+        this.reload();
       }
     },
     computed: {
       title() {
-        return '搜索结果 - For Fun';
+        return '电影 - For Fun';
       }
     },
   }
 </script>
 
 <style scoped>
-
-  .el-container {
-    width: 640px;
-  }
-
-  .el-aside {
-    position: fixed;
-    left: 200px;
-    margin-right: 50px;
-    width: 150px !important;
-  }
-
-  .el-main {
-    padding: 0px;
-    line-height: 16px;
-  }
-
-  .me-month-list {
-    margin-top: 10px;
+  .movie-head {
     margin-bottom: 10px;
-    text-align: center;
-    list-style-type: none;
+    border-bottom: 2px solid #e2e2e2;
   }
-
-  .me-month-item {
-    margin-top: 18px;
-    padding: 4px;
-    font-size: 18px;
-    color: #5FB878;
-  }
-
-  .me-order-list {
-    float: right;
-  }
-
-  .me-month-title {
-    margin-left: 4px;
-    margin-bottom: 12px;
+  .movie-head .movie-head-item{
+    padding: 0 10px;
+    color: #27a;
   }
 </style>

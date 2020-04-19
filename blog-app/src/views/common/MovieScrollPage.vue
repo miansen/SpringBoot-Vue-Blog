@@ -1,16 +1,20 @@
 <template>
   <scroll-page :loading="loading" :offset="offset" :no-data="noData" v-on:load="load">
-    <article-item v-for="a in articles" :key="a.id" v-bind="a"></article-item>
+    <movie-item v-for="a in articles" :key="a.id" v-bind="a"></movie-item>
   </scroll-page>
 </template>
 
 <script>
-    import ArticleItem from '@/components/article/ArticleItem'
+    import MovieItem from '@/components/movie/MovieItem'
     import ScrollPage from '@/components/scrollpage'
-    import {getArticles} from '@/api/article'
+    import {douban_movie_list_api} from '@/api/movie'
 
     export default {
         name: "ArticleScrollPage",
+        components: {
+          'movie-item': MovieItem,
+          'scroll-page': ScrollPage
+        },
         props: {
             offset: {
                 type: Number,
@@ -59,7 +63,7 @@
                 loading: false,
                 noData: false,
                 innerPage: {
-                    pageSize: 5,
+                    pageSize: 10,
                     pageNumber: 1,
                     name: 'a.createDate',
                     sort: 'desc'
@@ -72,19 +76,19 @@
                 this.getArticles()
             },
             view(id) {
-                this.$router.push({path: `/view/${id}`})
+                this.$router.push({path: `/movies/detail/${id}`})
             },
             getArticles() {
                 let that = this
                 that.loading = true
-                let userid = this.$route.params.userid
-                console.error("this.$route.params.userid:" + userid);
-                that.query.authorId = userid
-                getArticles(that.query, that.innerPage, userid).then(data => {
-
-                    let newArticles = data.data
+                let params = {
+                  start: that.innerPage.pageNumber,
+                  count: that.innerPage.pageSize
+                };
+              douban_movie_list_api(that.$route.params.type, params).then(data => {
+                    let newArticles = data.data.subjects;
                     if (newArticles && newArticles.length > 0) {
-                        that.innerPage.pageNumber += 1
+                        that.innerPage.pageNumber += that.innerPage.pageSize;
                         that.articles = that.articles.concat(newArticles)
                     } else {
                         that.noData = true
@@ -92,7 +96,7 @@
 
                 }).catch(error => {
                     if (error !== 'error') {
-                        that.$message({type: 'error', message: '文章加载失败!', showClose: true})
+                        that.$message({type: 'error', message: '电影加载失败!', showClose: true})
                     }
                 }).finally(() => {
                     that.loading = false
@@ -100,22 +104,9 @@
 
             }
         },
-        components: {
-            'article-item': ArticleItem,
-            'scroll-page': ScrollPage
-        }
-
     }
 </script>
 
 <style scoped>
-  .el-card {
-    border-radius: 0;
-	opacity: 0.7;
-  }
 
-  .el-card:not(:first-child) {
-    margin-top: 10px;
-
-  }
 </style>

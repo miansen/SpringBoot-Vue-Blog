@@ -21,13 +21,13 @@ import com.shimh.entity.Tag;
 public interface ArticleRepository extends JpaRepository<Article, Integer>, JpaSpecificationExecutor<Article>, ArticleWrapper {
 
     List<Article> findByTags(Tag tag);
-
+    
     List<Article> findByCategory(Category category);
 
-    @Query(value = "select * from me_article order by view_counts desc limit :limit", nativeQuery = true)
+    @Query(value = "select * from me_article where status_cd = '1000' order by view_counts desc limit :limit", nativeQuery = true)
     List<Article> findOrderByViewsAndLimit(@Param("limit") int limit);
 
-    @Query(value = "select * from me_article order by create_date desc limit :limit", nativeQuery = true)
+    @Query(value = "select * from me_article where status_cd = '1000' order by create_date desc limit :limit", nativeQuery = true)
     List<Article> findOrderByCreateDateAndLimit(@Param("limit") int limit);
 
 }

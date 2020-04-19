@@ -15,8 +15,9 @@
           <el-menu-item index="/category/all">分类</el-menu-item>
           <el-menu-item index="/tag/all">标签</el-menu-item>
           <el-menu-item index="/archives">归档</el-menu-item>
-          <el-menu-item index="/log">日志</el-menu-item>
-          <el-menu-item index="/admin/login">后台登录</el-menu-item>
+          <el-menu-item index="/movies/list/in_theaters">电影</el-menu-item>
+          <!--<el-menu-item index="/log">日志</el-menu-item>-->
+          <el-menu-item @click="adminLogin">后台登录</el-menu-item>
           <el-menu-item>
             <el-input v-model="input" size="mini" placeholder="请输入内容" @keydown.enter.native="search(input)">
               <el-button slot="append" size="mini" icon="el-icon-search" @click="search(input)"></el-button>
@@ -105,6 +106,9 @@
             that.$message({message: error, type: 'error', showClose: true});
           }
         })
+      },
+      adminLogin() {
+        window.open('/#/admin/login');
       },
         mywenzhangclick() {
           console.error(this.$store.state.id)

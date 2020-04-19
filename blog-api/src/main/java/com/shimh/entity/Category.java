@@ -35,7 +35,6 @@ public class Category extends BaseEntity<Integer> {
 
     private String description;
 
-    @NotBlank
     private String avatar;
     
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")

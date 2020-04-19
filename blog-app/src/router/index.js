@@ -21,6 +21,7 @@ import ArticleList from '@/views/admin/article/List.vue';
 import UserList from '@/views/admin/user/List.vue';
 import SensitiveWordList from '@/views/admin/sensitiveword/List.vue';
 import AdminCategoryList from '@/views/admin/category/List.vue';
+import AdminEcharts from '@/views/admin/charts/echarts.vue';
 
 import {Message} from 'element-ui';
 
@@ -47,7 +48,7 @@ const router = new Router({
       children: [
         {
           path: '/admin/index',
-          component: AdminTable,
+          component: AdminEcharts,
           name: "仪表盘"
         }
       ]
@@ -134,6 +135,14 @@ const router = new Router({
         {
           path: '/search',
           component: r => require.ensure([], () => r(require('@/views/blog/BlogSearch')), 'search')
+        },
+        {
+          path: '/movies/list/:type',
+          component: r => require.ensure([], () => r(require('@/views/blog/BlogMovie')), 'BlogMovie')
+        },
+        {
+          path: '/movies/detail/:id',
+          component: r => require.ensure([], () => r(require('@/views/blog/BlogMovieView')), 'BlogMovieView')
         },
         {
           path: '/integral',
