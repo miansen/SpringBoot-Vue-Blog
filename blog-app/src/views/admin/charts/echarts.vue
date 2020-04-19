@@ -4,16 +4,16 @@
             <el-col :span="12">
                 <div id="chartColumn" style="width:100%; height:400px;"></div>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" style="display: none;">
                 <div id="chartBar" style="width:100%; height:400px;"></div>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" style="display: none">
                 <div id="chartLine" style="width:100%; height:400px;"></div>
             </el-col>
             <el-col :span="12">
                 <div id="chartPie" style="width:100%; height:400px;"></div>
             </el-col>
-            <el-col :span="24">
+            <el-col :span="24" style="display: none">
                 <a href="http://echarts.baidu.com/examples.html" target="_blank" style="float: right;">more>></a>
             </el-col>
         </el-row>
@@ -22,6 +22,7 @@
 
 <script>
     import echarts from 'echarts'
+    import {getAllCategorysDetail} from '@/api/category'
 
     export default {
         data() {
@@ -29,25 +30,41 @@
                 chartColumn: null,
                 chartBar: null,
                 chartLine: null,
-                chartPie: null
+                chartPie: null,
+                categorys: [],
             }
         },
 
         methods: {
             drawColumnChart() {
+                let that = this;
                 this.chartColumn = echarts.init(document.getElementById('chartColumn'));
-                this.chartColumn.setOption({
-                  title: { text: 'Column Chart' },
-                  tooltip: {},
-                  xAxis: {
-                      data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
-                  },
-                  yAxis: {},
-                  series: [{
-                      name: '销量',
+                getAllCategorysDetail().then(data => {
+                  let categorynames = [];
+                  let articles = [];
+                  for (let i = 0; i < data.data.length; i++) {
+                    let item = data.data[i];
+                    categorynames.push(item.categoryname);
+                    articles.push(item.articles);
+                  }
+
+                  this.chartColumn.setOption({
+                    title: { text: '发表文章最多的分类' },
+                    tooltip: {},
+                    xAxis: {
+                      data: categorynames
+                    },
+                    yAxis: {},
+                    series: [{
+                      name: '文章',
                       type: 'bar',
-                      data: [5, 20, 36, 10, 10, 20]
+                      data: articles
                     }]
+                  });
+                }).catch(error => {
+                  if (error !== 'error') {
+                    that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+                  }
                 });
             },
             drawBarChart() {
@@ -144,44 +161,57 @@
             },
             drawPieChart() {
                 this.chartPie = echarts.init(document.getElementById('chartPie'));
+
+              getAllCategorysDetail().then(data => {
+                let categorynames = [];
+                let articles = [];
+                for (let i = 0; i < data.data.length; i++) {
+                  let item = data.data[i];
+                  let obj = {};
+                  obj.value = item.articles;
+                  obj.name = item.categoryname;
+                  categorynames.push(item.categoryname);
+                  articles.push(obj);
+                }
+
                 this.chartPie.setOption({
-                    title: {
-                        text: 'Pie Chart',
-                        subtext: '纯属虚构',
-                        x: 'center'
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: "{a} <br/>{b} : {c} ({d}%)"
-                    },
-                    legend: {
-                        orient: 'vertical',
-                        left: 'left',
-                        data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
-                    },
-                    series: [
-                        {
-                            name: '访问来源',
-                            type: 'pie',
-                            radius: '55%',
-                            center: ['50%', '60%'],
-                            data: [
-                                { value: 335, name: '直接访问' },
-                                { value: 310, name: '邮件营销' },
-                                { value: 234, name: '联盟广告' },
-                                { value: 135, name: '视频广告' },
-                                { value: 1548, name: '搜索引擎' }
-                            ],
-                            itemStyle: {
-                                emphasis: {
-                                    shadowBlur: 10,
-                                    shadowOffsetX: 0,
-                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                }
-                            }
+                  title: {
+                    text: '最受欢迎的分类',
+                    // subtext: '纯属虚构',
+                    x: 'center'
+                  },
+                  tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                  },
+                  legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data:  categorynames
+                  },
+                  series: [
+                    {
+                      name: '分类名称',
+                      type: 'pie',
+                      radius: '55%',
+                      center: ['50%', '60%'],
+                      data: articles,
+                      itemStyle: {
+                        emphasis: {
+                          shadowBlur: 10,
+                          shadowOffsetX: 0,
+                          shadowColor: 'rgba(0, 0, 0, 0.5)'
                         }
-                    ]
+                      }
+                    }
+                  ]
                 });
+              }).catch(error => {
+                if (error !== 'error') {
+                  that.$message({type: 'error', message: '文章分类加载失败', showClose: true})
+                }
+              });
+
             },
             drawCharts() {
                 this.drawColumnChart()
