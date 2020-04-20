@@ -10,8 +10,8 @@
           <a @click="clickHandle('top250')" class="movie-head-item" :style="{'color': type == 'top250' ? '#27a' : '#333'}">TOP250</a>
         </div>
         <div class="movie-content">
-          <h1 class="me-view-title" style="margin-bottom: 20px">
-            <span>{{movie.title}}</span>
+          <h1 class="me-view-title" style="margin-bottom: 20px;text-align: center;">
+            <span style="font-size: 24px;">{{movie.title}}</span>
             <span class="year">({{movie.year}})</span>
           </h1>
           <div class="me-view-content">
@@ -58,7 +58,7 @@
                       <span class="pl">又名</span>:&nbsp;<span class="attrs">{{formatArray(movie.aka)}}</span>
                     </span>
                     <div class="interest_sectl">
-                      <div class="rating_logo ll">豆瓣评分：<strong class="ll rating_num">9.7</strong></div>
+                      <div class="rating_logo ll">豆瓣评分：<strong class="ll rating_num">{{movie.rating.average}}</strong></div>
                     </div>
                   </div>
                 </div>
@@ -66,11 +66,13 @@
             </div>
           </div>
           <div class="me-view-footer">
-            <div>5星：<el-progress :text-inside="true" :percentage="50" :stroke-width="20" status="primary" style="display: inline">5星</el-progress></div>
-            <div>4星：<el-progress :text-inside="true" :percentage="50" :stroke-width="20" status="success" style="display: inline">5星</el-progress></div>
-            <div>3星：<el-progress :text-inside="true" :percentage="50" :stroke-width="20" status="warning" style="display: inline">5星</el-progress></div>
-            <div>2星：<el-progress :text-inside="true" :percentage="50" :stroke-width="20" status="exception" style="display: inline">5星</el-progress></div>
-            <div>1星：<el-progress :text-inside="true" :percentage="50" :stroke-width="20" status="exception" style="display: inline">5星</el-progress></div>
+            <section class="chart-container">
+              <el-row>
+                <el-col :span="12">
+                  <div id="chartColumn" style="width:100%; height:400px;"></div>
+                </el-col>
+              </el-row>
+            </section>
           </div>
         </div>
       </el-main>
@@ -79,7 +81,8 @@
 </template>
 
 <script>
-  import {douban_movie_detail_api} from '@/api/movie'
+  import {douban_movie_detail_api} from '@/api/movie';
+  import echarts from 'echarts';
 
     export default {
       name: "BlogMovieView",
@@ -108,7 +111,14 @@
               languages: [],
               pubdates: [],
               durations: [],
-              aka: []
+              aka: [],
+              rating:{
+                max: 0,
+                average: 0,
+                details: [0, 0, 0, 0, 0],
+                stars: 50,
+                min: 0
+              }
             },
             type: ''
           }
@@ -124,6 +134,12 @@
           let that = this
           douban_movie_detail_api(that.$route.params.id).then(data => {
             Object.assign(that.movie, data.data);
+            let details = data.data.rating.details;
+            let arr = [];
+            for (let i in details) {
+              arr.push(details[i]);
+            }
+            that.movie.rating.details = arr;
           }).catch(error => {
             if (error !== 'error') {
               that.$message({type: 'error', message: '电影加载失败', showClose: true})
@@ -153,6 +169,22 @@
         clickHandle(type) {
           this.$router.push({path: `/movies/list/${type}`});
           this.reload();
+        },
+        drawColumnChart() {
+          this.chartColumn = echarts.init(document.getElementById('chartColumn'));
+          this.chartColumn.setOption({
+            title: { text: '' },
+            tooltip: {},
+            xAxis: {
+              data: ["1星", "2星", "3星", "4星", "5星"]
+            },
+            yAxis: {},
+            series: [{
+              name: '豆瓣评分',
+              type: 'bar',
+              data: this.movie.rating.details
+            }]
+          });
         }
       },
       computed: {
@@ -160,6 +192,12 @@
           return '电影详情 - For Fun';
         }
       },
+      mounted: function () {
+        this.drawColumnChart();
+      },
+      updated: function () {
+        this.drawColumnChart();
+      }
     }
 </script>
 
