@@ -2,7 +2,7 @@
 
   <div v-title :data-title="title">
     <el-container>
-      <el-main class="me-ct-container" style="width: 700px;">
+      <el-main class="me-ct-container">
         <div class="movie-head">
           <a @click="clickHandle('in_theaters')" class="movie-head-item" :style="{'color': type == 'in_theaters' ? '#27a' : '#333'}">正在热映</a>
           <a @click="clickHandle('coming_soon')" class="movie-head-item" :style="{'color': type == 'coming_soon' ? '#27a' : '#333'}">即将上映</a>
@@ -54,9 +54,12 @@
 </script>
 
 <style scoped>
+  .me-ct-container {
+    width: 1000px;
+  }
   .movie-head {
     margin-bottom: 10px;
-    border-bottom: 2px solid #e2e2e2;
+    border-bottom: 1px solid #e2e2e2;
   }
   .movie-head .movie-head-item{
     padding: 0 10px;

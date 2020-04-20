@@ -1,12 +1,10 @@
 <template>
-  <div class="slide-page" style="float: left;margin: 0 20px;">
     <a @click="view(id)" class="item">
       <div class="cover-wp" style="width: 115px;">
         <img :src="getImages(images.small)" :alt="title" style="width: 100%;"/>
       </div>
-      <p>{{title}}<strong>{{rating.average}}</strong></p>
+      <p>{{title}}&nbsp;&nbsp;<strong>{{rating.average}}</strong></p>
     </a>
-  </div>
 </template>
 
 <script>
@@ -36,7 +34,7 @@
 </script>
 
 <style scoped>
-  .item {
+  .movie-content .item {
     display: block;
     float: left;
     color: #37a;
@@ -45,9 +43,17 @@
     margin: 0 25px 10px 0;
     width: 115px;
   }
-  .cover-wp {
+  .movie-content .cover-wp {
     background-size: 100%;
     height: 161px;
     overflow: hidden;
+  }
+  .movie-content .item p {
+    margin: 5px 0 0;
+    height: 40px;
+    overflow: hidden;
+  }
+  .movie-content .item strong {
+    color: #e09015;
   }
 </style>

@@ -1,7 +1,13 @@
 <template>
-  <scroll-page :loading="loading" :offset="offset" :no-data="noData" v-on:load="load">
-    <movie-item v-for="a in articles" :key="a.id" v-bind="a"></movie-item>
-  </scroll-page>
+  <div class="movie-content">
+    <div class="list-wp">
+      <div class="list">
+        <scroll-page :loading="loading" :offset="offset" :no-data="noData" v-on:load="load">
+          <movie-item v-for="a in articles" :key="a.id" v-bind="a"></movie-item>
+        </scroll-page>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -63,8 +69,8 @@
                 loading: false,
                 noData: false,
                 innerPage: {
-                    pageSize: 10,
-                    pageNumber: 1,
+                    pageSize: 20,
+                    pageNumber: 0,
                     name: 'a.createDate',
                     sort: 'desc'
                 },
@@ -108,5 +114,7 @@
 </script>
 
 <style scoped>
-
+  .movie-content {
+    padding: 0 10px;
+  }
 </style>
